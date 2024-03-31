@@ -18,7 +18,16 @@ async function generate(draftContainer, messages, draftTitle) {
         await browser.storage.local.set({messages});
     } catch (error) {
         console.error(error);
-        draftContainer.textContent = "Error: Unable to retrieve data";
+        let error_details = '';
+        let error_startIndex = error.message.indexOf('{');
+        let error_jsonString = error.message.substring(error_startIndex);
+        try {
+            let error_obj = JSON.parse(error_jsonString);
+            error_details = error_obj.error.message + "<br><br>Error Code: " + error_obj.error.code;
+        } catch (e) {
+            console.error("Error parsing JSON string:", e);
+        }
+        draftContainer.innerHTML = "Error: Unable to retrieve data.<br><br>" + error_details;
     }
 }
 
